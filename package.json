@@ -4,7 +4,10 @@
   "description": "Wieloosobowa strategiczna gra turowa",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server.js",
+    "devstart": "nodemon ./server.js",
+    "serverstart": "SET DEBUG=strategyGame:* & npm run devstart"
   },
   "repository": {
     "type": "git",
@@ -18,7 +21,11 @@
   "homepage": "https://github.com/GuruGalaxy/strategyGame#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "moment": "^2.24.0",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }
