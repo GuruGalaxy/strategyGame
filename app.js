@@ -1,6 +1,4 @@
-/**
- * Module dependencies.
- */
+// Module dependencies.
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -11,25 +9,17 @@ const path = require("path");
 
 const dbConnector = require('./dbConnector');
 
-/**
- * Create Express server.
- */
+// Create Express server.
+
 const app = express();
 
-/**
- * Load environment variables from .env file, where API keys and passwords are configured.
- */
+// Load environment variables from .env file, where API keys and passwords are configured.
 dotenv.config({ path: '.env.dev' });
 
-/**
- * Routers
- */
-//const indexRouter = require('./routes/index');
+// Routers
 const loginRouter = require('./routes/LoginRouter');
 
-/**
- * Pipeline config
- */
+// Pipeline config
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser()); // CookieParser dopiero gdy będzie potrzebny
@@ -40,13 +30,12 @@ app.use(express.static(path.join(__dirname, 'shared')));
 //app.use('/', indexRouter);
 app.use('/login', loginRouter);
 
-// view engine setup
-
+// View engine setup
 app.engine('html', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', path.join(__dirname, 'views/')); 
 
-// error handler
+// Error handler
 app.use(function(err, req, res, next) {
 console.log(err);
 

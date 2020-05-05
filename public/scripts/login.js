@@ -1,6 +1,6 @@
 $('document').ready(function(){
 
-	console.log("kek");
+	console.log("kek", LoginRequest);
 
 	var loginBtn		= $("#loginBtn");
 	var formInputLogin	= $("#formLogin");

@@ -1,5 +1,8 @@
-// przyjkład
+// Model classes
 const User = require('../models/User'); // DTO?
+const SessionData = require('../models/SessionData');
+
+// Service instances
 const UserService = require('../services/UserService');
 
 // Display list of all BookInstances.
@@ -8,17 +11,18 @@ exports.index = function(req, res) {
 };
 
 // 
-exports.login = function(req, res) {
+exports.loginAsync = async function(req, res) {
+    var LoginResponse = require('../shared/responses/LoginResponse');
 
     var login = req.body.login;
     var password = req.body.pass;
 
-    var loggedUser = UserService.UserLogin(login, password);
+    var loggedUser = await UserService.LoginAsync(login, password);
 
     
-    console.log(loggedUserId);
+    console.log(loggedUser);
 
-    if(loggedUserId == null)
+    if(loggedUser == null)
     {
         res.sendStatus(401);
     }
@@ -30,7 +34,7 @@ exports.login = function(req, res) {
         newSessData.userId      = loggedUser.id;
         newSessData.userLogin   = loggedUser.login
 
-        var response = new Response();
+        var response = LoginResponse;
 
         response.status.success = true;
         response.status.auth 	= true;

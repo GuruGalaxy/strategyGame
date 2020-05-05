@@ -8,6 +8,6 @@ var loginController = require('../controllers/LoginController');
 router.get('/', loginController.index);
 
 // POST request for creating Book.
-router.post('/', loginController.login);
+router.post('/', loginController.loginAsync);
 
 module.exports = router;

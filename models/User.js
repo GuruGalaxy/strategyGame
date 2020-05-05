@@ -3,11 +3,11 @@ const Sequelize = require("sequelize");
 
 module.exports = function(){
 
-	var User = sequelize.define(`uzytkownicy`, 
+	var User = sequelize.dbConnection.define(`users`, 
 	{
-		id			: { type: Sequelize.dataTypes.INTEGER(10), notNull: true, primaryKey: true},
-		login		: { type: Sequelize.dataTypes.STRING(45)},
-		password	: { type: Sequelize.dataTypes.STRING(45)}
+		id			: { type: Sequelize.INTEGER(10), notNull: true, primaryKey: true},
+		login		: { type: Sequelize.STRING(45)},
+		password	: { type: Sequelize.STRING(45)}
 	},
 	{
 		freezeTableName: true,

@@ -5,11 +5,13 @@ var UserModel	= require('../models/User.js')();
 //
 module.exports = {
 
-    UserLogin: function(login, pass) {
+    LoginAsync: async function(login, pass) {
 
-        UserModel.findOne( { where: { login: login, password: pass } }
-        ).then(loggedUser => {
-    
+        console.log("login: " + login + ", pass: " + pass);
+        var loggedUser = await UserModel.findOne( { where: { login: login, password: pass } }
+        )//.then(loggedUser => {
+           
+        console.log("loggedUser: " + loggedUser);
             if(loggedUser)
             {
                 return {
@@ -21,8 +23,6 @@ module.exports = {
             {
                 return null;
             }
-        });
+        //});
     }
 }
-
-
