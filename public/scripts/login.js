@@ -30,7 +30,7 @@ $('document').ready(function(){
 			console.log(response);//---
 			if(response.status.auth && response.status.success)
 			{
-				window.location.assign("inspections.html");
+				window.location.assign("rooms");
 			}
 			else
 			{

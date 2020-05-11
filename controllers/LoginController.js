@@ -1,5 +1,5 @@
 // Model classes
-const User = require('../models/User'); // DTO?
+const User = require('../models/entities/User'); // DTO?
 const SessionData = require('../models/SessionData');
 
 // Service instances
@@ -40,7 +40,11 @@ exports.loginAsync = async function(req, res) {
         response.status.auth 	= true;
         response.data           = loggedUser.id;
 
-        res.json(response);
-	    res.end();
+        req.session.userData = newSessData;
+
+        req.session.save(function(err) {
+            res.json(response);
+	        res.end();
+        });
     }
 };

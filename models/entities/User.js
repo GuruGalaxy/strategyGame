@@ -1,4 +1,4 @@
-const sequelize = require("../dbConnector");
+const sequelize = require("../../dbConnector");
 const Sequelize = require("sequelize");
 
 module.exports = function(){

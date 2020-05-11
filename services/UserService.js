@@ -1,6 +1,6 @@
 console.log("SERWER, POST: /user/login");
 
-var UserModel	= require('../models/User.js')();
+var UserModel	= require('../models/entities/User.js')();
 
 //
 module.exports = {
