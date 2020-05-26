@@ -12,7 +12,7 @@ exports.index = function(req, res) {
 
 // 
 exports.loginAsync = async function(req, res) {
-    var LoginResponse = require('../shared/responses/LoginResponse');
+    var LoginResponse = require('../shared/http/responses/LoginResponse');
 
     var login = req.body.login;
     var password = req.body.pass;
@@ -28,11 +28,8 @@ exports.loginAsync = async function(req, res) {
     }
     else
     {
-        var newSessData = new SessionData();
-    
-        newSessData.auth	    = true;
-        newSessData.userId      = loggedUser.id;
-        newSessData.userLogin   = loggedUser.login
+        var newSessData = new SessionData(loggedUser.id, loggedUser.login);
+        newSessData.auth = true;
 
         var response = LoginResponse;
 

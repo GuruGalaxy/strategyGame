@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 
-class ActiveRoom {
+module.exports = class ActiveRoom {
     constructor(name, usersLimit){
         this.id = uuidv4();
         this.users = [];
@@ -10,7 +10,7 @@ class ActiveRoom {
     }
 }
 
-export default ActiveRoom;
+//export default ActiveRoom;
 
 /*module.exports = function(){
 

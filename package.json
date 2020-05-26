@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Wieloosobowa strategiczna gra turowa",
   "main": "server.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./app.js",
@@ -25,7 +24,8 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "express-socket.io-session": "^1.3.5",
-    "moment": "^2.24.0",
+    "graceful-fs": "^4.2.2",
+    "moment": "^2.25.3",
     "mustache-express": "^1.3.0",
     "mysql2": "^2.1.0",
     "sequelize": "^4.37.10",

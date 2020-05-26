@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 
 module.exports = {
     // database configuration
-    dbConnection: new Sequelize('strategy_game', 'strategygame', 'Uizoqt8Viv25vM20', 
+    dbConnection: new Sequelize('groom', 'groom_db_user', 'Uizoqt8Viv25vM20', 
     {
         host: 'localhost',
         dialect: 'mysql',

@@ -1,0 +1,22 @@
+html, body {
+    height: 100%;
+    margin: 0;
+
+    background-color: #212529;
+}
+
+#wrapper {
+    min-height: 100%;
+
+    background-color: #212529;
+}
+
+#size-wrapper {
+    height: 100vh;
+}
+
+/* UPDATES FOR NES FRAMEWORK */
+
+.nes-container {
+    margin : 0 !important;
+}

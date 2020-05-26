@@ -1,23 +1,21 @@
 // Module dependencies.
-//const express = require('express');
-import express from 'express';
+const express = require('express');
+const bodyParser = require('body-parser');
+const mustacheExpress = require('mustache-express');
+const dotenv = require('dotenv');
+const path = require('path');
+const http = require('http');
+const moment = require('moment');
+const dbConnector = require('./dbConnector');
+
 const session = require('express-session')({
 	secret: 'zyrafywchodzadoszafy',
 	resave: true,
 	saveUninitialized: true,
-	//cookie: { maxAge: 3600000 }
 });
 const sharedsession = require("express-socket.io-session")(session, {
   autoSave:true
 });
-const bodyParser = require('body-parser');
-const mustacheExpress = require('mustache-express');
-const dotenv = require('dotenv');
-const path = require("path");
-const http = require('http');
-//const cookieParser = require('cookie-parser');
-
-const dbConnector = require('./dbConnector');
 
 // Create Express server.
 const app = express();
@@ -30,7 +28,7 @@ app.use(session);
 io.use(sharedsession);
 
 // Startup websocket services
-const roomSocketService = require('./services/roomSocketService')(io, sharedsession);
+const roomSocketController = require('./controllers/roomSocketController')(io, sharedsession);
 
 // Load environment variables from .env file, where API keys and passwords are configured.
 dotenv.config({ path: '.env.dev' });

@@ -24,5 +24,20 @@ module.exports = {
                 return null;
             }
         //});
+    },
+
+    checkAuth : function(session){
+        if(session.hasOwnProperty('userData'))
+        {
+            if(session.userData.hasOwnProperty('auth'))
+            {
+                if(session.userData.auth === true)
+                {
+                    return true
+                }
+            }
+        }
+        
+        return false;
     }
 }

@@ -1,11 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 
-import UserDto from '../models/UserDto.mjs';
-import ActiveRoom from '../models/ActiveRoom';
-//const ActiveRoomModel = require('../models/ActiveRoom');
+const UserDto = require('../models/UserDto');
+const ActiveRoom = require('../models/ActiveRoom');
 
 
-var ActiveRooms = [];
+var ActiveRooms = [
+    new ActiveRoom("Test Room", 4),
+    new ActiveRoom("Super Hyper Room Overdrive", 4),
+];
 
 //
 module.exports = {
@@ -13,8 +15,15 @@ module.exports = {
         return ActiveRooms;
     },
 
-    GetActiveRoom: function(roomId) {
-        return ActiveRoom;
+    GetActiveRoom: function(activeRoomId) {
+        let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
+
+        if(activeRoom == undefined)
+        {
+            return false;
+        }
+
+        return activeRoom;
     },
 
     AddActiveRoom: function(name) {
@@ -30,7 +39,7 @@ module.exports = {
 
         if(roomIndex >= 0)
         {
-            ActiveRooms = ActiveRooms.splice(roomIndex, 0);
+            ActiveRooms = ActiveRooms.splice(roomIndex, 1);
 
             return true;
         }
@@ -38,11 +47,42 @@ module.exports = {
         return false;
     },
 
-    AddUserToActiveRoom: function(roomId, userDto){
-        
+    AddUserToActiveRoom: function(activeRoomId, userDto){
+        let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
+
+        if(activeRoom == undefined)
+        {
+            return false;
+        }
+
+        activeRoom.users.push(userDto);
+
+        return true;
     },
 
-    RemoveUserFromActiveRoom: function(){
-        
+    RemoveUserFromActiveRoom: function(activeRoomId, userDto){
+        let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
+
+        if(activeRoom == undefined)
+        {
+            return false;
+        }
+
+        let userIndex = activeRoom.users.findIndex( user => user.id === userDto.id );
+
+        if(userIndex >= 0)
+        {
+            console.log("RemoveUserFromActiveRoom before", activeRoom,userIndex,userDto);
+            activeRoom.users.splice(userIndex, 1);
+            console.log("RemoveUserFromActiveRoom after", activeRoom);
+            if(!Array.isArray(activeRoom.users) || !activeRoom.users.length)
+            {
+                this.RemoveActiveRoom(activeRoomId);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
