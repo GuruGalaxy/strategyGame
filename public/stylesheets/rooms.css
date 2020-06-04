@@ -46,6 +46,9 @@
     color: #212529;
     background-color: #ff8738;
 }
+.chat-list-element {
+    width: 100%;
+}
 
 .right-screen-wrapper {
     height: 99%;
@@ -74,10 +77,20 @@
     height: 100%;
 }
 
+#chat-screen-inside-messagelist {
+    position: absolute;
+
+    display: flex;
+    flex-flow: column-reverse;
+    overflow: hidden;
+
+    top: 0;
+    bottom: 100px;
+}
+
 #chat-screen-inside-editor {
     position: absolute;
 
     width: 100%;
-
-    bottom: 0;;
+    bottom: 0;
 }

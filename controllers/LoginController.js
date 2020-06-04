@@ -1,6 +1,6 @@
 // Model classes
 const User = require('../models/entities/User'); // DTO?
-const SessionData = require('../models/SessionData');
+const SessionData = require('../models/classes/SessionData');
 
 // Service instances
 const UserService = require('../services/UserService');
@@ -19,17 +19,13 @@ exports.loginAsync = async function(req, res) {
 
     var loggedUser = await UserService.LoginAsync(login, password);
 
-    
-    console.log(loggedUser);
-
     if(loggedUser == null)
     {
         res.sendStatus(401);
     }
     else
     {
-        var newSessData = new SessionData(loggedUser.id, loggedUser.login);
-        newSessData.auth = true;
+        var newSessData = SessionData.fromObject(loggedUser);
 
         var response = LoginResponse;
 

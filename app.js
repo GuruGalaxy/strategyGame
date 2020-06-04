@@ -28,7 +28,7 @@ app.use(session);
 io.use(sharedsession);
 
 // Startup websocket services
-const roomSocketController = require('./controllers/roomSocketController')(io, sharedsession);
+const roomSocketController = require('./controllers/RoomSocketController')(io, sharedsession);
 
 // Load environment variables from .env file, where API keys and passwords are configured.
 dotenv.config({ path: '.env.dev' });

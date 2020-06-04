@@ -1,6 +1,6 @@
 // Model classes
-const User = require('../models/ActiveRoom'); // DTO?
-const SessionData = require('../models/SessionData');
+const User = require('../models/classes/ActiveRoom'); // DTO?
+const SessionData = require('../models/classes/SessionData');
 
 // Service instances
 const RoomService = require('../services/RoomService');

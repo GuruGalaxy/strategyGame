@@ -1,5 +1,3 @@
-var roomListItemHtml = "";
-var chatUserItemHtml = "";
 var currentRoomId = null;
 
 const socket = io('/rooms');
@@ -7,26 +5,6 @@ const socket = io('/rooms');
 var showError = function(msg){
 	alert(msg);//---
 };
-
-$.ajax({
-	url : "/partials/roomListItem.html",
-	statusCode: {
-		404: function(){ showError("Error during partial loading, code: 404"); },
-		500: function(){ showError("Error during partial loading, code: 500"); }
-	}
-}).done(function(response){
-	roomListItemHtml = response;
-});
-
-$.ajax({
-	url : "/partials/chatUserItem.html",
-	statusCode: {
-		404: function(){ showError("Error during partial loading, code: 404"); },
-		500: function(){ showError("Error during partial loading, code: 500"); }
-	}
-}).done(function(response){
-	chatUserItemHtml = response;
-});
 
 $("document").ready(function(){
 
@@ -45,33 +23,33 @@ $("document").ready(function(){
 
 	var msgBox = $('#msgBox');
 	var btnSendMsg = $('#btnSendMsg');
+	var btnReady = $('#btnReady');
 	var btnLeave = $('#btnLeave');
+
+	var chatUserItemTemplate = $.templates("#chatUserItem");
 
 	// --- ELEMENT OPERATIONS
 	btnLeave.on("click", leaveRoom);
 
 	btnSendMsg.on("click", sendMsg)
 
+	btnReady.on("click", switchReady);
+
 	function renderRoomList(rooms){
+		clearRoomList();
+
+		const renderPromises = [];
+
 		rooms.forEach(room => {
-			let roomId = room.id;
-			let name = room.name;
-			let userCount = room.users.length;
-			let userMax = room.usersLimit;
-
-			let roomHtmlString = roomListItemHtml
-			.replace("!ROOMID", roomId)
-			.replace("!NAME", name)
-			.replace("!NUM1", userCount)
-			.replace("!NUM2", userMax);
-
-			console.log("roomHtmlString", roomHtmlString);
-			roomListElement.append(roomHtmlString);
+			room.userCount = room.users.length;
+			renderPromises.push( renderExtTemplate(roomListElement, room, "roomListItem") );
 		});
 
-		$(".room-list-element").on("click", function(){
-			joinRoom(this.id)
-		});
+		Promise.all(renderPromises).then(() => {
+			$(".room-list-element").on("click", function(){
+				joinRoom(this.id)
+			});
+		});	
 	};
 
 	function clearRoomList(){
@@ -82,14 +60,7 @@ $("document").ready(function(){
 		clearChatList()
 
 		room.users.forEach(user => {
-			let login = user.login;
-			let userId = user.id;
-
-			let userHtmlString = chatUserItemHtml
-			.replace("!USERID", userId)
-			.replace("!LOGIN", login)
-
-			chatListElement.append(userHtmlString);
+			renderExtTemplate(chatListElement, user, "chatUserItem");
 		});
 	};
 
@@ -98,7 +69,8 @@ $("document").ready(function(){
 	};
 
 	function renderMessage(message){
-
+		$("#chat-screen-inside-messagelist").prepend("<p class = 'chat-message'>" + message + "</p>");
+		
 	}
 
 	// --- INTERFACE OPERATIONS
@@ -134,8 +106,6 @@ $("document").ready(function(){
 
 	// switch view to chat state
 	function prepareChatInterface(room){
-		console.log("prepareChatInterface", room);
-
 		roomListWrapper.hide();
 		roomScreenWrapper.hide();
 
@@ -161,12 +131,16 @@ $("document").ready(function(){
 		}
 
 		let message = msgBox.val();
-		console.log("message", message);
+		msgBox.val("");
 
 		socket.emit(EVENTS.ROOMS.REQUESTS.MESSAGE_ROOM, message);
 	}
 
-	function leaveRoom(){console.log("leave");
+	function switchReady(){
+		socket.emit(EVENTS.ROOMS.REQUESTS.SWITCH_READY);
+	}
+
+	function leaveRoom(){
 		if(currentRoomId == null){
 			showError("You are not in a room");
 			return false;
@@ -180,34 +154,45 @@ $("document").ready(function(){
     console.log("Rooms view ready", EVENTS);
 	
 	// --- WEBSOCKET RESPONSE HANDLERS
+	socket.on('connect', function(){
 
-	socket.on(EVENTS.ROOMS.REQUESTS.JOIN_ROOM, function(room){
-		console.log('EVENTS.ROOMS.REQUESTS.JOIN_ROOM', room);
+		socket.on(EVENTS.ROOMS.RESPONSES.ERROR, function(error){
+			console.log('EVENTS.ROOMS.RESPONSES.ERROR', error);
+			showError(error)
+		});
 
-		currentRoomId = room.id;
+		socket.on(EVENTS.ROOMS.REQUESTS.JOIN_ROOM, function(room){
+			console.log('EVENTS.ROOMS.REQUESTS.JOIN_ROOM', room);
+	
+			currentRoomId = room.id;
+	
+			prepareChatInterface(room);
+		});
+	
+		socket.on(EVENTS.ROOMS.REQUESTS.LEAVE_ROOM, function(info){
+			console.log('EVENTS.ROOMS.REQUESTS.LEAVE_ROOM', info);
+			currentRoomId = null;
+			prepareRoomInterface();
+		});
+	
+		socket.on(EVENTS.ROOMS.RESPONSES.JOINED_ROOM,	function(room){
+			console.log('EVENTS.ROOMS.RESPONSES.JOINED_ROOM');
+			renderChatList(room)
+		});
 
-		prepareChatInterface(room);
+		socket.on(EVENTS.ROOMS.RESPONSES.LEFT_ROOM,		function(room){
+			console.log('EVENTS.ROOMS.RESPONSES.LEFT_ROOM');
+			renderChatList(room)
+		});
+
+		socket.on(EVENTS.ROOMS.RESPONSES.MESSAGED_ROOM,	function(message) {
+			console.log('EVENTS.ROOMS.RESPONSES.MESSAGED_ROOM');
+			renderMessage(message)
+		});
+
+		socket.on(EVENTS.ROOMS.RESPONSES.SWITCHED_READY, function(room) {
+			console.log('EVENTS.ROOMS.RESPONSES.SWITCHED_READY');
+			renderChatList(room)
+		});
 	});
-
-	socket.on(EVENTS.ROOMS.REQUESTS.LEAVE_ROOM, function(info){
-		console.log('EVENTS.ROOMS.REQUESTS.LEAVE_ROOM', info);
-		currentRoomId = null;
-		prepareRoomInterface();
-	});
-
-	socket.on(EVENTS.ROOMS.RESPONSES.ERROR,			showError(error));
-	socket.on(EVENTS.ROOMS.RESPONSES.JOINED_ROOM,	renderChatList(room));
-	socket.on(EVENTS.ROOMS.RESPONSES.LEFT_ROOM,		renderChatList(room));
-	socket.on(EVENTS.ROOMS.RESPONSES.MESSAGED_ROOM,	renderMessage(message));
-
-    /*const socket = io('/rooms');
-
-	socket.on('connect', () => {
-		console.log(socket.id); // 'G5p5...'
-	  });
-
-	socket.on(EVENTS.ROOMS.RESPONSES.ROOMS, function(data) {
-		console.log("ROOMS EVENT", data);
-	});*/
-
 });

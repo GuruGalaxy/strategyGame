@@ -1,7 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 
-const UserDto = require('../models/UserDto');
-const ActiveRoom = require('../models/ActiveRoom');
+const UserDto = require('../models/dtos/UserDto');
+const UserRoomDto = require('../models/dtos/UserRoomDto');
+const ActiveRoom = require('../models/classes/ActiveRoom');
 
 
 var ActiveRooms = [
@@ -39,7 +40,7 @@ module.exports = {
 
         if(roomIndex >= 0)
         {
-            ActiveRooms = ActiveRooms.splice(roomIndex, 1);
+            ActiveRooms.splice(roomIndex, 1);
 
             return true;
         }
@@ -47,7 +48,7 @@ module.exports = {
         return false;
     },
 
-    AddUserToActiveRoom: function(activeRoomId, userDto){
+    AddUserToActiveRoom: function(activeRoomId, userRoomDto){
         let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
 
         if(activeRoom == undefined)
@@ -55,12 +56,12 @@ module.exports = {
             return false;
         }
 
-        activeRoom.users.push(userDto);
+        activeRoom.users.push(userRoomDto);
 
         return true;
     },
 
-    RemoveUserFromActiveRoom: function(activeRoomId, userDto){
+    RemoveUserFromActiveRoom: function(activeRoomId, userId){
         let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
 
         if(activeRoom == undefined)
@@ -68,18 +69,36 @@ module.exports = {
             return false;
         }
 
-        let userIndex = activeRoom.users.findIndex( user => user.id === userDto.id );
+        let userIndex = activeRoom.users.findIndex( user => user.id === userId );
 
         if(userIndex >= 0)
         {
-            console.log("RemoveUserFromActiveRoom before", activeRoom,userIndex,userDto);
             activeRoom.users.splice(userIndex, 1);
-            console.log("RemoveUserFromActiveRoom after", activeRoom);
             if(!Array.isArray(activeRoom.users) || !activeRoom.users.length)
             {
                 this.RemoveActiveRoom(activeRoomId);
             }
 
+            return true;
+        }
+        
+
+        return false;
+    },
+
+    SwitchReadyForUser: function(activeRoomId, userId){
+        let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
+
+        if(activeRoom == undefined)
+        {
+            return false;
+        }
+
+        let userRoomDtoIndex = activeRoom.users.findIndex( user => user.id === userId );
+
+        if(userRoomDtoIndex >= 0)
+        {
+            activeRoom.users[userRoomDtoIndex].ready = !activeRoom.users[userRoomDtoIndex].ready;
             return true;
         }
 

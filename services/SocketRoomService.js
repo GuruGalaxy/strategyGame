@@ -1,19 +1,24 @@
 const moment = require('moment');
 const RoomService = require('./RoomService');
 
-const SessionData = require('../models/SessionData');
-const UserDto = require('../models/UserDto');
+const SessionData = require('../models/classes/SessionData');
+const UserRoomDto = require('../models/dtos/UserRoomDto');
 
 const MESSAGES = require('../shared/socket/Messages');
 const EVENTS = require('../shared/socket/Events');
 
 var composeMessageString = function(login, message){
+    if(message.trim() === "")
+    {
+        return false;
+    }
+
     let now = moment().format('hh:mm:ss LT');
     let messageString = now + " " + login + ": " + message;
     return messageString;
 };
 
-module.exports = function(io){
+module.exports = function(roomsNamespace){
     return {
         joinRoom : function (socket, roomId){
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
@@ -29,8 +34,11 @@ module.exports = function(io){
             // Cannot join room if already in a room
             if(sessionData.currentRoomId != null)
             {
-                socket.emit(EVENTS.ROOMS.RESPONSES.ERROR, MESSAGES.ROOMS.ERRORS.ALREADY_IN);
-                return false;
+                if(!sessionData.currentRoomId === roomId)
+                {
+                    socket.emit(EVENTS.ROOMS.RESPONSES.ERROR, MESSAGES.ROOMS.ERRORS.ALREADY_IN);
+                    return false;
+                }
             }
 
             // Cannot join room if its full
@@ -40,9 +48,8 @@ module.exports = function(io){
                 return false;
             }
         
-            let userDto = UserDto.fromObject(sessionData);
-            console.log("joinRoom",userDto, sessionData); // ---
-            RoomService.AddUserToActiveRoom(roomId, userDto);
+            let userRoomDto = UserRoomDto.fromObject(sessionData);
+            RoomService.AddUserToActiveRoom(roomId, userRoomDto);
         
             // Add roomId to session
             sessionData.currentRoomId = roomId;
@@ -58,7 +65,6 @@ module.exports = function(io){
 
         leaveRoom : function(socket){
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
-            console.log("socket.handshake.session.userData leaveRoom", socket.handshake.session.userData);
 
             // Check if room exists
             let room = RoomService.GetActiveRoom(sessionData.currentRoomId);
@@ -75,15 +81,14 @@ module.exports = function(io){
                 return false;
             }
 
-            let userDto = UserDto.fromObject(socket.handshake.session.userData);
-            RoomService.RemoveUserFromActiveRoom(sessionData.currentRoomId, userDto)
+            RoomService.RemoveUserFromActiveRoom(sessionData.currentRoomId, sessionData.id)
 
             // Remove roomId from session
             sessionData.currentRoomId = null;
             socket.handshake.session.userData = sessionData;
 
             socket.leave(room.id);
-            socket.to(room.id).emit(EVENTS.ROOMS.RESPONSES.LEFT_ROOM, room);
+            roomsNamespace.in(room.id).emit(EVENTS.ROOMS.RESPONSES.LEFT_ROOM, room);
             socket.emit(EVENTS.ROOMS.REQUESTS.LEAVE_ROOM, MESSAGES.ROOMS.INFOS.CONFIRM);
 
             return true;
@@ -91,18 +96,49 @@ module.exports = function(io){
 
         messageRoom : function(socket, message){
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
+            let room = RoomService.GetActiveRoom(sessionData.currentRoomId);
 
-            // Check idf user is in a room
+            // Check if user is in a room
             if(sessionData.currentRoomId == null)
             {
                 return false;
             }
 
             let fullMessage = composeMessageString(sessionData.login, message);
-            socket.to(sessionData.currentRoomId).emit(EVENTS.ROOMS.RESPONSES.MESSAGED_ROOM, fullMessage);
+
+            // check if message was generated successfully
+            if(!fullMessage)
+            {
+                return false;
+            }
+
+            roomsNamespace.in(sessionData.currentRoomId).emit(EVENTS.ROOMS.RESPONSES.MESSAGED_ROOM, fullMessage);
+
+            return true;
+        },
+
+        switchReady : function(socket){
+            let sessionData = SessionData.fromObject(socket.handshake.session.userData);
+
+            // Check if user is in a room
+            if(sessionData.currentRoomId == null)
+            {
+                return false;
+            }
+
+            let success = RoomService.SwitchReadyForUser(sessionData.currentRoomId, sessionData.id);
+
+            if(!success)
+            {
+                return false;
+            }
+
+            let room = RoomService.GetActiveRoom(sessionData.currentRoomId);
+
+            roomsNamespace.in(room.id).emit(EVENTS.ROOMS.RESPONSES.SWITCHED_READY, room);
+            socket.emit(EVENTS.ROOMS.REQUESTS.SWITCH_READY, MESSAGES.ROOMS.INFOS.CONFIRM);
 
             return true;
         }
     }
-    
 }
