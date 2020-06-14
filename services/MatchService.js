@@ -1,6 +1,7 @@
 var activeMatches = [];
 
 const Match = require('../models/classes/Match');
+const Game = require('../models/classes/Game');
 
 //
 module.exports = {
@@ -22,16 +23,24 @@ module.exports = {
             return false;
         }
 
-        let game = Game.fromObject(room);
+        let game = Game.fromObject(room); console.log("room.config", room.users);
 
         // Create match only if game is created first
         if(!game)
         {
             return false;
         }
-        room.game = game;
+console.log("room, game", room, game);// ---
+        match = Match.fromObject(room, game);
+console.log("service match", match);// ---
+        if(!match)
+        {
+            return false;
+        }
 
-        return Match.fromObject(room);
+        match.game = game;
+        activeMatches.push(match);
+        return match;
     },
     RemoveMatchAsync: async function(matchId) {
         let matchIndex = activeMatches.findIndex( match => match.id === matchId );

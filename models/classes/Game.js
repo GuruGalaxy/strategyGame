@@ -1,13 +1,14 @@
-const Match = require('./Game');
 const UserGameDto = require('../dtos/UserGameDto');
-
-const FieldGenerator = require(); // TODO
+const MapGenerator = require('../../engine/MapGenerator');
 
 module.exports = class Game {
     constructor({id, users, config}){
         this.id = id;
         this.users = users;
-        this.field = FieldGenerator.generateField(config.fieldSize);
+
+        let map = MapGenerator.generateMap(config);
+        this.map = MapGenerator.populateMap(users, map, config);
+        MapGenerator.debugMap(this.map);
 
         this.executeTurn = function(moves){
 
@@ -26,14 +27,15 @@ module.exports = class Game {
         if(id && users && config)
         {
             let newGame = {
-                id = id,
-                config = config
+                id : id,
+                config : config,
+                users : []
             };
     
             users.forEach(user => {
                 newGame.users.push( UserGameDto.fromObject(user) );
             });
-    
+     
             return new this(newGame);
         }
         return false;

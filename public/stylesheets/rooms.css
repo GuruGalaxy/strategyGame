@@ -26,12 +26,22 @@
     margin: 0;
 }
 
-.room-list > div {
+#room-list-inside {
+    position: relative;
 
+    height: 100%;
 }
 
-.room-list-header {
+#room-list-inside-roomlist {
+    position: absolute;
+    top: 0;
+    bottom: 65px;
+}
 
+#room-list-inside-create {
+    position: absolute;
+    bottom: 0;
+    width: 100%
 }
 
 .room-list-element {
@@ -41,8 +51,6 @@
 .room-list-element>h4:nth-child(2) { text-align: right; }
 
 .room-list-element:hover {
-    cursor: pointer;
-
     color: #212529;
     background-color: #ff8738;
 }

@@ -6,17 +6,17 @@ const ActiveRoom = require('../models/classes/ActiveRoom');
 
 
 var ActiveRooms = [
-    new ActiveRoom("Test Room", 4),
-    new ActiveRoom("Super Hyper Room Overdrive", 4),
+    new ActiveRoom("Test Room", {usersLimit : 2}),
+    new ActiveRoom("Super Hyper Room Overdrive", {usersLimit : 4}),
 ];
 
 //
 module.exports = {
-    GetActiveRooms: function() {
+    getActiveRooms: function() {
         return ActiveRooms;
     },
 
-    GetActiveRoom: function(activeRoomId) {
+    getActiveRoom: function(activeRoomId) {
         let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
 
         if(activeRoom == undefined)
@@ -27,15 +27,15 @@ module.exports = {
         return activeRoom;
     },
 
-    AddActiveRoom: function(name) {
-        let newActiveRoom = new ActiveRoom(name, 4);
+    addActiveRoom: function(name, config) {
+        let newActiveRoom = new ActiveRoom(name, config);
 
         ActiveRooms.push(newActiveRoom);
 
         return newActiveRoom;
     },
 
-    RemoveActiveRoom: function(activeRoomId){
+    removeActiveRoom: function(activeRoomId){
         let roomIndex = ActiveRooms.findIndex( room => room.id === activeRoomId );
 
         if(roomIndex >= 0)
@@ -48,7 +48,7 @@ module.exports = {
         return false;
     },
 
-    AddUserToActiveRoom: function(activeRoomId, userRoomDto){
+    addUserToActiveRoom: function(activeRoomId, userRoomDto){
         let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
 
         if(activeRoom == undefined)
@@ -61,7 +61,7 @@ module.exports = {
         return true;
     },
 
-    RemoveUserFromActiveRoom: function(activeRoomId, userId){
+    removeUserFromActiveRoom: function(activeRoomId, userId){
         let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
 
         if(activeRoom == undefined)
@@ -76,7 +76,7 @@ module.exports = {
             activeRoom.users.splice(userIndex, 1);
             if(!Array.isArray(activeRoom.users) || !activeRoom.users.length)
             {
-                this.RemoveActiveRoom(activeRoomId);
+                this.removeActiveRoom(activeRoomId);
             }
 
             return true;
@@ -86,7 +86,7 @@ module.exports = {
         return false;
     },
 
-    SwitchReadyForUser: function(activeRoomId, userId){
+    switchReadyForUser: function(activeRoomId, userId){
         let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
 
         if(activeRoom == undefined)
@@ -103,5 +103,27 @@ module.exports = {
         }
 
         return false;
+    },
+
+    checkIsRoomReady : function(activeRoomId){
+        let activeRoom = ActiveRooms.find( room => room.id === activeRoomId );
+
+        // Check if there is enough users
+        if(!(activeRoom.users.length == activeRoom.config.usersLimit))
+        {
+            return false;
+        }
+
+        // Check if every user in a room is ready
+        let isEveryUserReady = true;
+        activeRoom.users.forEach(user => {
+            if(!user.ready) isEveryUserReady = false;
+        });
+        if(!isEveryUserReady)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

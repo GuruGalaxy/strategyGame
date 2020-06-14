@@ -1,5 +1,5 @@
 module.exports = class UserMatchDto {
-	constructor(id, login, ready = false) {
+	constructor(id, login, connected = false) {
 		this.id = id;
         this.login = login;
         this.connected = connected;
@@ -22,7 +22,7 @@ module.exports = class UserMatchDto {
         
         if(object.hasOwnProperty('connected'))
 		{
-			connected = object.ready;
+			connected = object.connected;
 		}
 
 		return new this(id, login, connected);

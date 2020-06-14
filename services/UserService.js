@@ -1,5 +1,3 @@
-console.log("SERWER, POST: /user/login");
-
 var UserModel	= require('../models/entities/User.js')();
 
 //
@@ -23,7 +21,6 @@ module.exports = {
     },
 
     checkAuth : function(session){
-        console.log('session', session);
         if(session.hasOwnProperty('userData'))
         {
             if(session.userData.hasOwnProperty('auth'))

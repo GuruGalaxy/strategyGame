@@ -9,15 +9,15 @@ module.exports = class Match {
         roomId = null,
         name = null,
         config = null,
-        game = null,
-        users = null
+        users = null,
+        game = null
     }){
         this.id = id;
         this.roomId = roomId;
         this.name = name;
         this.config = config;
-        this.game = game;
         this.users = users;
+        this.game = game;
 
         this.playing = false;
     }
@@ -26,19 +26,17 @@ module.exports = class Match {
         id = null,
         name = null, 
         config = null, 
-        users = null, 
-        usersLimit = null,
-        game = null
-    }){
-        if(id && name && config && users && usersLimit && game)
+        users = null
+    }, game = null){
+        if(id && name && config && users && game)
         {
             let newMatch = {
-                id = uuidv4(),
-                roomId = id,
-                name = name,
-                config = config,
-                game = game,
-                users = []
+                id : uuidv4(),
+                roomId : id,
+                name : name,
+                config : config,
+                game : game,
+                users : []
             };
     
             users.forEach(user => {

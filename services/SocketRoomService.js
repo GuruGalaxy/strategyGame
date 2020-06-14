@@ -24,7 +24,7 @@ module.exports = function(roomsNamespace){
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
         
             // Check if room exists
-            let room = RoomService.GetActiveRoom(roomId);
+            let room = RoomService.getActiveRoom(roomId);
             if(room == false)
             {
                 socket.emit(EVENTS.ROOMS.RESPONSES.ERROR, MESSAGES.ROOMS.ERRORS.ROOM_NOT_FOUND);
@@ -49,7 +49,7 @@ module.exports = function(roomsNamespace){
             }
         
             let userRoomDto = UserRoomDto.fromObject(sessionData);
-            RoomService.AddUserToActiveRoom(roomId, userRoomDto);
+            RoomService.addUserToActiveRoom(roomId, userRoomDto);
         
             // Add roomId to session
             sessionData.currentRoomId = roomId;
@@ -67,7 +67,7 @@ module.exports = function(roomsNamespace){
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
 
             // Check if room exists
-            let room = RoomService.GetActiveRoom(sessionData.currentRoomId);
+            let room = RoomService.getActiveRoom(sessionData.currentRoomId);
             if(room == false)
             {
                 socket.emit(EVENTS.ROOMS.RESPONSES.ERROR, MESSAGES.ROOMS.ERRORS.NOT_FOUND);
@@ -81,7 +81,7 @@ module.exports = function(roomsNamespace){
                 return false;
             }
 
-            RoomService.RemoveUserFromActiveRoom(sessionData.currentRoomId, sessionData.id)
+            RoomService.removeUserFromActiveRoom(sessionData.currentRoomId, sessionData.id)
 
             // Remove roomId from session
             sessionData.currentRoomId = null;
@@ -96,7 +96,7 @@ module.exports = function(roomsNamespace){
 
         messageRoom : function(socket, message){
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
-            let room = RoomService.GetActiveRoom(sessionData.currentRoomId);
+            let room = RoomService.getActiveRoom(sessionData.currentRoomId);
 
             // Check if user is in a room
             if(sessionData.currentRoomId == null)
@@ -126,19 +126,35 @@ module.exports = function(roomsNamespace){
                 return false;
             }
 
-            let success = RoomService.SwitchReadyForUser(sessionData.currentRoomId, sessionData.id);
+            let success = RoomService.switchReadyForUser(sessionData.currentRoomId, sessionData.id);
 
             if(!success)
             {
                 return false;
             }
 
-            let room = RoomService.GetActiveRoom(sessionData.currentRoomId);
+            let room = RoomService.getActiveRoom(sessionData.currentRoomId);
 
             roomsNamespace.in(room.id).emit(EVENTS.ROOMS.RESPONSES.SWITCHED_READY, room);
             socket.emit(EVENTS.ROOMS.REQUESTS.SWITCH_READY, MESSAGES.ROOMS.INFOS.CONFIRM);
 
             return true;
+        },
+
+        startCountdownAsync : async function(socket){
+            let sessionData = SessionData.fromObject(socket.handshake.session.userData);
+
+            for(let counter = 5; counter > 0; counter--){
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                roomsNamespace.in(sessionData.currentRoomId).emit(EVENTS.ROOMS.RESPONSES.MESSAGED_ROOM, "Match will start in " + counter);
+            }
+
+            return true;
+        },
+
+        startMatch : async function(socket, match){
+            let sessionData = SessionData.fromObject(socket.handshake.session.userData);
+            roomsNamespace.in(sessionData.currentRoomId).emit(EVENTS.ROOMS.RESPONSES.MATCH_STARTED, match);
         }
     }
 }

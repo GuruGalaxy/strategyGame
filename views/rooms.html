@@ -2,7 +2,7 @@
 <html>
 <head>
 
-    <title>Login</title>
+    <title>GROOM</title>
 
     <link type = "text/css" href = ".\stylesheets\bootstrap.min.css" rel = "stylesheet"></link>
     <link type = "text/css" href = ".\stylesheets\basic.css" rel = "stylesheet"></link>
@@ -26,6 +26,14 @@
 
                     <div id = "room-list-inside">
 
+                        <div id = "room-list-inside-roomlist">
+                            <p>Chat connected, type in a message and click 'Send' to talk with other players</p>
+                        </div>
+
+                        <div id = "room-list-inside-create" class="nes-field is-inline">
+                            <button id = "btnCreate" type="button" class="nes-btn is-success">+ Create room</button>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -35,7 +43,7 @@
                     <p class="title">right-screen</p>
 
                     <div>
-                        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
+                        <p>Welcome to GROOM</p>
                     </div>
                     
                 </div>
@@ -61,14 +69,14 @@
                         
 
                         <div id = "chat-screen-inside-messagelist">
-                            <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
+                            <p>Chat connected, type in a message and click 'Send' to talk with other players</p>
                         </div>
 
                         <div id = "chat-screen-inside-editor" class="nes-field is-inline">
 
                             <button id = "btnReady" type="button" class="nes-btn is-primary">Ready</button>
                             <button id = "btnSendMsg" type="button" class="nes-btn is-primary">Send</button>
-                            <input type="text" id="msgBox" class="nes-input is-dark" placeholder="dark.css">
+                            <input type="text" id="msgBox" class="nes-input is-dark" placeholder="...">
                             <button id = "btnLeave" type="button" class="nes-btn is-warning">Leave room</button>
 
                         </div>

@@ -1,6 +1,8 @@
 const SessionData = require('../models/classes/SessionData');
 
 const UserService = require('../services/UserService');
+const RoomService = require('../services/RoomService');
+const MatchService = require('../services/MatchService');
 
 const MESSAGES = require('../shared/socket/Messages');
 const EVENTS = require('../shared/socket/Events');
@@ -52,9 +54,28 @@ module.exports = function(io, sharedsession, session){
         });
 
         // Route for switching ready state
-        socket.on(EVENTS.ROOMS.REQUESTS.SWITCH_READY, function(){
-            
+        socket.on(EVENTS.ROOMS.REQUESTS.SWITCH_READY, async function(){
+            let sessionData = SessionData.fromObject(socket.handshake.session.userData);
+
+            let room = RoomService.getActiveRoom(sessionData.currentRoomId);
             let result = SocketRoomService.switchReady(socket)
+            
+            if(result === true && RoomService.checkIsRoomReady(room.id))
+            {
+                await SocketRoomService.startCountdownAsync(socket);
+                let match = null;
+
+                if(RoomService.checkIsRoomReady(room.id))
+                {
+                    match = await MatchService.CreateMatchAsync(room);
+                }
+
+                if(match)
+                {
+                    SocketRoomService.startMatch(socket, match);
+                    RoomService.removeActiveRoom(room.id);
+                }
+            }
 
         });
 

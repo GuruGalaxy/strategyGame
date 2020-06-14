@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>GROOM</title>
+
+    <link type = "text/css" href = "..\stylesheets\bootstrap.min.css" rel = "stylesheet"></link>
+    <link type = "text/css" href = "..\stylesheets\basic.css" rel = "stylesheet"></link>
+    <link type = "text/css" href = "..\stylesheets\create-room.css" rel = "stylesheet"></link>
+
+    <link type = "text/css" href = "https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel = "stylesheet"></link>
+    <link href = "https://fonts.googleapis.com/css?family=Press+Start+2P" rel = "stylesheet"> 
+
+</head>
+<body>
+
+    <div id = "wrapper" class = "container-fluid">
+
+        <div id = "form" class="nes-container is-dark with-title">
+            <p class="title">create-room</p>
+
+            <div id = "form-inside" class = "nes-container is-dark" style = "margin: 50px auto !important">
+                <div class = "nes-field is-inline">
+                    <label for = "name">Room name</label>
+                    <input id = "inputName" class = "nes-input is-dark" placeholder = "" type = "text">
+                </div>
+                <div class = "nes-field is-inline">
+                    <label for = "name">Players</label>
+                    <input id = "inputUsersLimit" class = "nes-input is-dark" placeholder = "" type = "text">
+                </div>
+                <div class = "nes-field is-inline">
+                    <label for = "seed">Map seed</label>
+                    <input id = "inputSeed" class = "nes-input is-dark" placeholder = "" type = "text">
+                </div>
+                <div class = "nes-field is-inline">
+                    <label for = "seed">Map size</label>
+                    <input id = "inputSize" class = "nes-input is-dark" value = "50" type = "number" min = "40" max = "60">
+                </div>
+                <div class = "nes-field is-inline">
+                    <label for = "seed">Map cover %</label>
+                    <input id = "inputCover" class = "nes-input is-dark" value = "50" type = "number" min = "40" max = "90">
+                </div>
+                <button id = "backBtn" class = "nes-btn is-error">Back</button>
+                <button id = "createBtn" class = "nes-btn is-success">Create room</button>
+            </div>
+        </div>
+
+    </div>
+    
+    <script type = "text/javascript" src = "..\scripts\jquery-3.5.0.js"></script>
+    <script type = "text/javascript" src = "..\scripts\bootstrap.min.js"></script>
+    <script type = "text/javascript" src = "..\scripts\socket.io.js"></script>
+    <script type = "text/javascript" src = "..\scripts\jsrender.js"></script>
+    
+    <script type = "text/javascript" src = "..\socket\Events.js"></script>
+    <script type = "text/javascript" src = "..\socket\Messages.js"></script>
+    <script type = "text/javascript" src = "..\scripts\helpers.js"></script>
+    <script type = "text/javascript" src = "..\http\requests\create-room-request.js"></script>
+    <script type = "text/javascript" src = "..\scripts\create-room.js"></script>
+    
+</body>

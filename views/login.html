@@ -2,36 +2,42 @@
 <html>
 <head>
 
-    <title>Login</title>
+    <title>GROOM</title>
 	
 	<script type = "text/javascript" src = ".\scripts\jquery-3.5.0.js"></script>
 	<script type = "text/javascript" src = ".\scripts\bootstrap.min.js"></script>
     
 	<script type = "text/javascript" src = "..\http\requests\LoginRequest.js"></script>
-    <script type = "text/javascript" src = "..\scripts\login.js"></script>
+	<script type = "text/javascript" src = "..\scripts\login.js"></script>
 
+	<link type = "text/css" href = "..\stylesheets\login.css" rel = "stylesheet"></link>
 	<link type = "text/css" href = ".\stylesheets\bootstrap.min.css" rel = "stylesheet"></link>
+
+	<link type = "text/css" href = "https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel = "stylesheet"></link>
+    <link href = "https://fonts.googleapis.com/css?family=Press+Start+2P" rel = "stylesheet"> 
 
 </head>
 <body>
 
-	<div class = "container">
-		<div class = "row">
-			<div class = "col-xs-12 col-md-8 col-lg-6 mt-5">
+	<div id = "wrapper" class = "container-fluid">
+		<div id = "form" class="nes-container is-dark with-title">
+			<p class="title">create-room</p>
+
+			 <div id = "form-inside" class = "nes-container is-dark" style = "margin: 50px auto !important">
 
 				<h3>
-					Przeglądy techniczne {{test}}
+					GROOM - ekran logowania WIP
 				</h3>
-				<div class="form-group">
+				<div class = "nes-field is-inline">
 					<label for = "formLogin">Login</label>
-					<input type = "text" class = "form-control" id = "formLogin" aria-describedby = "emailHelp" placeholder = "Login" name = "login">
+					<input type = "text" class = "nes-input is-dark" id = "formLogin" aria-describedby = "emailHelp" placeholder = "Login" name = "login">
 
 				</div>
-				<div class = "form-group">
+				<div class = "nes-field is-inline">
 					<label for = "formPass">Hasło</label>
-					<input type = "password" class = "form-control" id = "formPass" placeholder = "Hasło" name = "pass">
+					<input type = "password" class = "nes-input is-dark" id = "formPass" placeholder = "Hasło" name = "pass">
 				</div>
-				<button id = "loginBtn" class = "btn btn-primary rounded-0">Zaloguj</button>
+				<button id = "loginBtn" class = "nes-btn is-success">Zaloguj</button>
 
 			</div>
 		</div>

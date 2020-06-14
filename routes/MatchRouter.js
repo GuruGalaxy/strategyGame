@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // Require controller modules.
-var roomController = require('../controllers/RoomController');
+var matchController = require('../controllers/MatchController');
 // Require service modules.
 var userService = require('../services/UserService');
 
@@ -19,15 +19,6 @@ router.use(function(req, res, next){
 });
 
 // GET
-router.get('/', roomController.index);
-
-// GET
-router.get('/create', roomController.renderCreateTemplate);
-
-// POST
-router.post('/create', roomController.addRoomAsync);
-
-// GET
-router.get('/rooms', roomController.getRoomsAsync);
+router.get('/', matchController.index);
 
 module.exports = router;

@@ -1,4 +1,6 @@
 var currentRoomId = null;
+var initialRoomId = sessionStorage.getItem('roomId');
+sessionStorage.removeItem('roomId');
 
 const socket = io('/rooms');
 
@@ -8,12 +10,18 @@ var showError = function(msg){
 
 $("document").ready(function(){
 
+	// --- INIT CHECKS
+	if(initialRoomId)
+	{
+		joinRoom(initialRoomId);
+	}
+
 	// --- ELEMENT DEFINITIONS
 	var roomListWrapper = $("#room-list-wrapper");
-	var roomListElement = $("#room-list-inside");
+	var roomListElement = $("#room-list-inside-roomlist");
 
 	var roomScreenWrapper = $('#room-screen-wrapper');
-	var roomScreenElement = $('#room-list-inside');
+	var roomScreenElement = $('#room-screen-inside');
 
 	var chatListWrapper = $("#chat-list-wrapper");
 	var chatListElement = $("#chat-list-inside");
@@ -21,20 +29,19 @@ $("document").ready(function(){
 	var chatScreenWrapper = $('#chat-screen-wrapper');
 	var chatScreenElement = $('#chat-screen-inside');
 
+	var btnCreate = $('#btnCreate');
 	var msgBox = $('#msgBox');
 	var btnSendMsg = $('#btnSendMsg');
 	var btnReady = $('#btnReady');
 	var btnLeave = $('#btnLeave');
 
-	var chatUserItemTemplate = $.templates("#chatUserItem");
-
 	// --- ELEMENT OPERATIONS
+	btnCreate.on("click", goToCreate);
 	btnLeave.on("click", leaveRoom);
-
-	btnSendMsg.on("click", sendMsg)
-
+	btnSendMsg.on("click", sendMsg);
 	btnReady.on("click", switchReady);
 
+	// --- FUNCTIONS
 	function renderRoomList(rooms){
 		clearRoomList();
 
@@ -47,6 +54,7 @@ $("document").ready(function(){
 
 		Promise.all(renderPromises).then(() => {
 			$(".room-list-element").on("click", function(){
+				console.log();
 				joinRoom(this.id)
 			});
 		});	
@@ -70,10 +78,13 @@ $("document").ready(function(){
 
 	function renderMessage(message){
 		$("#chat-screen-inside-messagelist").prepend("<p class = 'chat-message'>" + message + "</p>");
-		
 	}
 
 	// --- INTERFACE OPERATIONS
+
+	function goToCreate(){
+		window.location.assign('/rooms/create');
+	}
 
 	function refreshRooms(){
 		$.ajax({
@@ -194,5 +205,15 @@ $("document").ready(function(){
 			console.log('EVENTS.ROOMS.RESPONSES.SWITCHED_READY');
 			renderChatList(room)
 		});
+
+		socket.on(EVENTS.ROOMS.RESPONSES.MATCH_STARTED, function(match){
+			console.log("EVENTS.ROOMS.RESPONSES.MATCH_STARTED", match);
+		});
 	});
 });
+
+// $(document).keypress(function(e) {
+// 	if(e.which == 13) {
+// 		login();
+// 	}
+// });

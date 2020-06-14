@@ -1,0 +1,18 @@
+#wrapper {
+    height: 99vh;
+    padding: 4px;
+}
+
+#form {
+    height: 100%
+}
+
+#form-inside {
+    width: 50%;
+    max-width: 600px;
+    margin: auto;
+}
+
+#form-inside > * {
+    margin: 15px auto;
+}
