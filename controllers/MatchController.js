@@ -1,30 +1,52 @@
 // Model classes
+SessionData = require('../models/classes/SessionData');
 
 // Service instances
 const MatchService = require('../services/MatchService');
 
 // Display list of all rooms
-exports.index = async function(req, res) {
-    console.log("req.session", req.session);
+exports.indexParams = async function(req, res) {
+    let sessionData = SessionData.fromObject(req.session.userData);
 
-    // let match = await MatchService.getMatch(req.params.matchId);
+    let match = await MatchService.getMatchById(req.params.matchId);
 
-    res.render("../views/match.html");
+    if(match.users.some((user) => { return user.id == sessionData.id; }))
+    {
+        sessionData.currentMatchId = match.id;
+
+        req.session.userData = sessionData;
+        res.render("../views/match.html");
+    }
+    else
+    {
+        res.sendStatus(404);
+    }
 };
 
-// 
-exports.getRoomsAsync = async function(req, res) {
+exports.index = async function(req, res){
+    let sessionData = SessionData.fromObject(req.session.userData);
 
-    var rooms = await MatchService.getActiveRooms();
+    if(!sessionData.currentMatchId){
+        res.sendStatus(404);
+        return false;
+    }
 
-    res.json(rooms);
-    res.end();
-};
+    let match = await MatchService.getMatchById(sessionData.currentMatchId);
 
-exports.getRoomByIdAsync = async function(req, res) {
+    if(!match){
+        res.sendStatus(404);
+        return false;
+    }
 
-};
+    if(match.users.some((user) => { return user.id == sessionData.id; }))
+    {
+        sessionData.currentMatchId = match.id;
 
-exports.addRoomAsync = async function(req, res) {
-    
-};
+        req.session.userData = sessionData;
+        res.render("../views/match.html");
+    }
+    else
+    {
+        res.sendStatus(404);
+    }
+}

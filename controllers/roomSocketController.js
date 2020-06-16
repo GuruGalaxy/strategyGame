@@ -67,7 +67,7 @@ module.exports = function(io, sharedsession, session){
 
                 if(RoomService.checkIsRoomReady(room.id))
                 {
-                    match = await MatchService.CreateMatchAsync(room);
+                    match = MatchService.createMatch(room);
                 }
 
                 if(match)

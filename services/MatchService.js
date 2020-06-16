@@ -5,7 +5,7 @@ const Game = require('../models/classes/Game');
 
 //
 module.exports = {
-    GetMatchByIdAsync: async function(matchId) {
+    getMatchById: function(matchId) {
         let match = activeMatches.find( match => match.id === matchId );
 
         if(match == undefined)
@@ -15,7 +15,7 @@ module.exports = {
 
         return match;
     },
-    CreateMatchAsync: async function(room) {
+    createMatch: function(room) {
         // Create match only if there is no matches of the same roomId
         let existingMatch = activeMatches.find( match => match.roomId === room.id );
         if(existingMatch)
@@ -42,7 +42,7 @@ console.log("service match", match);// ---
         activeMatches.push(match);
         return match;
     },
-    RemoveMatchAsync: async function(matchId) {
+    removeMatch:  function(matchId) {
         let matchIndex = activeMatches.findIndex( match => match.id === matchId );
 
         if(matchIndex >= 0)
@@ -54,10 +54,48 @@ console.log("service match", match);// ---
         
         return false;
     },
-    AddMoveToMatchAsync: async function(matchId, move) {},
-    RemoveMoveFromMatchAsync: async function(matchId, userMatchDto) {},
-    StartMatchAsync: async function(matchId) {},
-    EndMatchAsync: async function(matchId) {},
-    PauseMatchAsync: async function(matchId) {},
-    UnpauseMatchAsync: async function(matchId) {}
+    addMoveToMatch: function(matchId, move) {},
+    removeMoveFromMatch: function(matchId, userMatchDto) {},
+    setUserAsConnected: function(matchId, userId){
+        let match = activeMatches.find( match => match.id === matchId );
+        if(!match) return false;
+
+        let user = match.users.find( user => user.id === userId );
+        if(!user) return false;
+
+        user.connected = true;
+    },
+    setUserAsDisconnected: function(matchId, userId){
+        let match = activeMatches.find( match => match.id === matchId );
+        if(!match) return false;
+
+        let user = match.users.find( user => user.id === userId );
+        if(!user) return false;
+
+        user.connected = false;
+    },
+    startMatch: function(matchId) {},
+    endMatch: function(matchId) {},
+    pauseMatch: function(matchId) {
+        let match = activeMatches.find( match => match.id === matchId );
+
+        // check if match exists
+        if(!match){
+            return false;
+        }
+
+        match.playing = false;
+        return true;
+    },
+    unpauseMatch: function(matchId) {
+        let match = activeMatches.find( match => match.id === matchId );
+
+        // check if match exists
+        if(!match){
+            return false;
+        }
+
+        match.playing = true;
+        return true;
+    }
 }

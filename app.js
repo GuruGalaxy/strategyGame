@@ -29,6 +29,7 @@ io.use(sharedsession);
 
 // Startup websocket services
 const roomSocketController = require('./controllers/RoomSocketController')(io, sharedsession);
+const matchSocketController = require('./controllers/MatchSocketController')(io, sharedsession);
 
 // Load environment variables from .env file, where API keys and passwords are configured.
 dotenv.config({ path: '.env.dev' });
@@ -36,9 +37,11 @@ dotenv.config({ path: '.env.dev' });
 // Routers
 const loginRouter = require('./routes/LoginRouter');
 const roomRouter = require('./routes/RoomRouter');
+const matchRouter = require('./routes/MatchRouter');
 
 // Startup services
 const roomService = require('./services/RoomService');
+const matchService = require('./services/MatchService');
 
 // Pipeline config
 app.use(express.json());
@@ -50,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'shared')));
 
 app.use('/login', loginRouter);
 app.use('/rooms', roomRouter);
+app.use('/match', matchRouter);
 
 // View engine setup
 app.engine('html', mustacheExpress());

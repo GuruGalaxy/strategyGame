@@ -11,6 +11,7 @@ var renderExtTemplate = function(element, data, templateName) {
     })
     .then(function(tmplData){
         $.templates({ tmpl: tmplData });
+        console.log("tmplData", tmplData);
         return $(element).append($.render.tmpl(data));
     });   
 };

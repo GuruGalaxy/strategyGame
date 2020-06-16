@@ -2,7 +2,7 @@ html, body {
     height: 100%;
     margin: 0;
 
-    background-color: #212529;
+    background-color: #212529 !important;
 }
 
 #wrapper {
@@ -13,6 +13,22 @@ html, body {
 
 #size-wrapper {
     height: 100vh;
+}
+
+.left-screen-wrapper {
+    height: 99%;
+
+    padding-top : 2px;
+    padding-left : 4px;
+    padding-right: 2px;
+}
+
+.right-screen-wrapper {
+    height: 99%;
+
+    padding-top : 2px;
+    padding-left : 2px;
+    padding-right: 4px;
 }
 
 /* UPDATES FOR NES FRAMEWORK */

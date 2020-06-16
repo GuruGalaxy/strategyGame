@@ -7,4 +7,4 @@
        "CAPITAL"    : 4
     }
 
-})(typeof exports === 'undefined'? this['tile-types']={}: exports);
+})(typeof exports === 'undefined'? this['tileTypes']={}: exports);

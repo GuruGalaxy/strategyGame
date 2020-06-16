@@ -26,27 +26,27 @@ module.exports = function(io, sharedsession, session){
         let sessionData = SessionData.fromObject(socket.handshake.session.userData);
         if(sessionData.currentMatchId != null)
         {
-            // SocketRoomService.joinRoom(socket, sessionData.currentRoomId)
+            SocketMatchService.joinMatch(socket)
         }
 
-        // Route for joining a room
-        socket.on(EVENTS.MATCHES.REQUESTS.JOIN_MATCH, async function(roomId){
+        // Route for rejoining a match
+        socket.on(EVENTS.MATCHES.REQUESTS.JOIN_MATCH, async function(){
 
-            //let result = SocketRoomService.joinRoom(socket, roomId);
+            let result = SocketMatchService.joinMatch(socket);
 
         });
 
         // Route for leaving a room
         socket.on(EVENTS.MATCHES.REQUESTS.LEAVE_MATCH, function(){
             
-            //let result = SocketRoomService.leaveRoom(socket);
+            let result = SocketMatchService.leaveMatch(socket);
 
         })
 
         // Route for messaging a room
-        socket.on(EVENTS.MATCHES.REQUESTS.MAKE_MOVE, function(message){
+        socket.on(EVENTS.MATCHES.REQUESTS.MAKE_MOVE, function(move){
             
-            let result = SocketRoomService.messageRoom(socket, message)
+            let result = SocketMatchService.addMove(socket, move)
 
         });
 
@@ -58,7 +58,7 @@ module.exports = function(io, sharedsession, session){
         // Disconnection behavior
         socket.on('disconnect', function(){
 
-            let result = SocketRoomService.leaveRoom(socket);
+            let result = SocketMatchService.leaveMatch(socket);
             
         });
     });

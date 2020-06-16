@@ -21,4 +21,7 @@ router.use(function(req, res, next){
 // GET
 router.get('/', matchController.index);
 
+// GET
+router.get('/:matchId', matchController.indexParams);
+
 module.exports = router;

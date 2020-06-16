@@ -198,9 +198,9 @@ module.exports = {
     },
 
     debugMap : function(map){
-        for(let row = 1; row <= 50; row++){
+        for(let row = 1; row <= 20; row++){
             let debugRow = "";
-            for(let column = 1; column <= 50; column++){
+            for(let column = 1; column <= 20; column++){
                 if( map.fields[row][column].type == FieldTypes.TYPES.MOUNTAIN) debugRow = debugRow + "X";
                 if( map.fields[row][column].type == FieldTypes.TYPES.FIELD) debugRow = debugRow + " ";
                 if( map.fields[row][column].type == FieldTypes.TYPES.CITY) debugRow = debugRow + "C";

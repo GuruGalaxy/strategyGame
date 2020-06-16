@@ -208,6 +208,8 @@ $("document").ready(function(){
 
 		socket.on(EVENTS.ROOMS.RESPONSES.MATCH_STARTED, function(match){
 			console.log("EVENTS.ROOMS.RESPONSES.MATCH_STARTED", match);
+
+			window.location.assign('/match/' + match.id);
 		});
 	});
 });

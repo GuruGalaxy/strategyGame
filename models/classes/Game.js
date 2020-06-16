@@ -8,7 +8,7 @@ module.exports = class Game {
 
         let map = MapGenerator.generateMap(config);
         this.map = MapGenerator.populateMap(users, map, config);
-        MapGenerator.debugMap(this.map);
+        //MapGenerator.debugMap(this.map);
 
         this.executeTurn = function(moves){
 
