@@ -7,7 +7,7 @@ const MatchService = require('../services/MatchService');
 const MESSAGES = require('../shared/socket/Messages');
 const EVENTS = require('../shared/socket/Events');
 
-module.exports = function(io, sharedsession, session){
+module.exports = function(io, sharedsession){
     const roomsNamespace = io.of('/rooms')
     .use(sharedsession)
     .use((socket, next) => {
@@ -29,7 +29,20 @@ module.exports = function(io, sharedsession, session){
         let sessionData = SessionData.fromObject(socket.handshake.session.userData);
         if(sessionData.currentRoomId != null)
         {
-            SocketRoomService.joinRoom(socket, sessionData.currentRoomId)
+            let room = RoomService.getActiveRoom(sessionData.currentRoomId);
+            if(room) SocketRoomService.joinRoom(socket, sessionData.currentRoomId);
+            else {
+                sessionData.currentRoomId = null;
+                socket.handshake.session.userData = sessionData;
+            }
+        }
+
+        // Check if session has a match that ended
+        if(sessionData.currentMatchId != null)
+        {
+            let match = MatchService.getMatchById(sessionData.currentMatchId);
+            if(!match) sessionData.currentMatchId = null;
+            socket.handshake.session.userData = sessionData;
         }
 
         // Route for joining a room

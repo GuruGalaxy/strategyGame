@@ -109,6 +109,7 @@ module.exports = {
                         if(chanceForCity <= ant.citiesLeft)
                         {
                             map.fields[ant.x][ant.y].type = FieldTypes.TYPES.CITY;
+                            map.fields[ant.x][ant.y].army = 30;
                             ant.generatedCity();
                         }
                         else
@@ -164,6 +165,7 @@ module.exports = {
                             crawlers[i].isDone = true;
                             field.type = FieldTypes.TYPES.CAPITAL;
                             field.ownerId = users[i].id;
+                            field.army = 15;
                             break singleCrawlerLoop;
                         }
                     }

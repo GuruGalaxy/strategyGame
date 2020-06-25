@@ -1,10 +1,14 @@
 var activeMatches = [];
 
+const events = require('events');
+
 const Match = require('../models/classes/Match');
 const Game = require('../models/classes/Game');
 
 //
 module.exports = {
+    eventEmitter: new events.EventEmitter(),
+
     getMatchById: function(matchId) {
         let match = activeMatches.find( match => match.id === matchId );
 
@@ -30,9 +34,9 @@ module.exports = {
         {
             return false;
         }
-console.log("room, game", room, game);// ---
-        match = Match.fromObject(room, game);
-console.log("service match", match);// ---
+
+        match = Match.fromObject(room, game, this.eventEmitter);
+
         if(!match)
         {
             return false;
@@ -67,15 +71,51 @@ console.log("service match", match);// ---
     },
     setUserAsDisconnected: function(matchId, userId){
         let match = activeMatches.find( match => match.id === matchId );
+        console.log("match", match);
         if(!match) return false;
 
         let user = match.users.find( user => user.id === userId );
+        console.log("user", user);
         if(!user) return false;
 
         user.connected = false;
+        console.log("match.users", match.users);
     },
-    startMatch: function(matchId) {},
-    endMatch: function(matchId) {},
+    startMatch: function(matchId) {
+        let match = activeMatches.find( match => match.id === matchId );
+
+        // check if match exists
+        if(!match)
+        {
+            return false;
+        }
+
+        // dont start a match if its already started
+        if(match.playing)
+        {
+            return false;
+        }
+
+        match.gameLoop = setInterval(() => { match.executeTurn(); console.log("INTERVAL 1500"); }, 1000);
+        match.playing = true;
+
+        return true;
+    },
+    endMatch: function(matchId) {
+        let match = activeMatches.find( match => match.id === matchId );
+
+        // check if match exists
+        if(!match)
+        {
+            return false;
+        }
+
+        if(match.gameLoop) clearInterval(match.gameLoop);
+
+        this.removeMatch(match.id);
+
+        return true;
+    },
     pauseMatch: function(matchId) {
         let match = activeMatches.find( match => match.id === matchId );
 

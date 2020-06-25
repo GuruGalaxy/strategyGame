@@ -3,6 +3,7 @@ const MatchService = require('./MatchService');
 
 const SessionData = require('../models/classes/SessionData');
 const UserGameDto = require('../models/dtos/UserGameDto');
+const MatchDto = require('../models/dtos/MatchDto');
 
 const MESSAGES = require('../shared/socket/Messages');
 const EVENTS = require('../shared/socket/Events');
@@ -10,7 +11,6 @@ const EVENTS = require('../shared/socket/Events');
 module.exports = function(matchesNamespace){
     return {
         joinMatch : function (socket){
-            console.log("joinMatch");// ---
             let sessionData = SessionData.fromObject(socket.handshake.session.userData);
         
             // Check if socket has matchId
@@ -39,10 +39,27 @@ module.exports = function(matchesNamespace){
             }
         
             MatchService.setUserAsConnected(sessionData.currentMatchId, sessionData.id);
+            let matchDto = MatchDto.fromObject({
+                id : match.id,
+                roomId : match.roomId,
+                name : match.name,
+                config : match.config,
+                users : match.users,
+                playing : match.playing,
+                map : match.game.map
+            });
+            console.log("joinMatch", match.users.every(user => user.connected == true));
+
+            //  TODO : CHANGE THIS TO READY STATE
+            if(match.users.every(user => user.connected == true))
+            {
+                MatchService.startMatch(match.id);
+            }
+            //
 
             socket.join(sessionData.currentMatchId);
-            socket.to(sessionData.currentMatchId).emit(EVENTS.MATCHES.RESPONSES.JOINED_MATCH, match);
-            socket.emit(EVENTS.MATCHES.REQUESTS.JOIN_MATCH, match);
+            socket.to(sessionData.currentMatchId).emit(EVENTS.MATCHES.RESPONSES.JOINED_MATCH, matchDto);
+            socket.emit(EVENTS.MATCHES.REQUESTS.JOIN_MATCH, {"matchDto" : matchDto, "userId" : sessionData.id});
 
             return true;
         },
@@ -64,7 +81,7 @@ module.exports = function(matchesNamespace){
             }
 
             // Can only leave a match if user is on match's users list
-            if(match.users.some((user) => { return user.id == sessionData.id; }))
+            if(!match.users.some((user) => { return user.id == sessionData.id; }))
             {
                 return false;
             }
@@ -96,10 +113,58 @@ module.exports = function(matchesNamespace){
 
             let match = MatchService.getMatchById(sessionData.currentMatchId);
 
-            matchesNamespace.in(match.id).emit(EVENTS.MATCHES.RESPONSES.SWITCHED_READY, match);
+            matchesNamespace.in(match.id).emit(EVENTS.MATCHES.RESPONSES.SWITCHED_READY, match.users);
             socket.emit(EVENTS.MATCHES.REQUESTS.SWITCH_READY, MESSAGES.MATCHES.INFOS.CONFIRM);
 
             return true;
         },
+
+        addMove : function(socket, moveIntention){
+            let sessionData = SessionData.fromObject(socket.handshake.session.userData);
+
+            // Check if socket has matchId
+            if(!sessionData.currentMatchId)
+            {
+                return false;
+            }
+
+            // Check if match exists
+            let match = MatchService.getMatchById(sessionData.currentMatchId);
+            if(!match)
+            {
+                return false;
+            }
+
+            if(!match.game.checkIsMoveIntentionValid(sessionData.userId, moveIntention))
+            {
+                return false;
+            }
+
+            match.game.addMoveIntention(sessionData.id, moveIntention);
+
+            return true;
+        },
+
+        endMatch : function(matchId){
+            // Check if match exists
+            let match = MatchService.getMatchById(matchId);
+            if(!match)
+            {
+                return false;
+            }
+
+            matchesNamespace.in(matchId).emit(EVENTS.MATCHES.RESPONSES.MATCH_ENDED, match);
+        },
+
+        sendMapToUsers : function(matchId){
+            // Check if match exists
+            let match = MatchService.getMatchById(matchId);
+            if(!match)
+            {
+                return false;
+            }
+
+            matchesNamespace.in(matchId).emit(EVENTS.MATCHES.RESPONSES.EXECUTED_TURN, {map: match.game.map, users: match.users});
+        }
     }
 }

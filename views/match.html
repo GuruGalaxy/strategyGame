@@ -20,7 +20,7 @@
 
             <div id = "user-list-inside">
 
-                <div id = "user-list-inside-roomlist">
+                <div id = "user-list-inside-userlist">
                     <p>Chat connected, type in a message and click 'Send' to talk with other players</p>
                 </div>
 
@@ -44,6 +44,12 @@
             
         </div>
     </div>
+
+    <div id = "endgame-window" class = "" style = "display: none;">
+        <h3>Game Over!</h3>
+        <p>The winner of this match is <span id = "endgame-window-login"></span>!</p>
+        <button id = "back-btn" class = "nes-btn is-primary">Back to rooms</button>
+    </div>
     
     <script type = "text/javascript" src = "..\scripts\jquery-3.5.0.js"></script>
     <script type = "text/javascript" src = "..\scripts\bootstrap.min.js"></script>
@@ -52,6 +58,7 @@
     
     <script type = "text/javascript" src = "..\socket\Events.js"></script>
     <script type = "text/javascript" src = "..\socket\Messages.js"></script>
+    <script type = "text/javascript" src = "..\socket\move-intention.js"></script>
     <script type = "text/javascript" src = "..\engine\field-types.js"></script>
     <script type = "text/javascript" src = "..\scripts\helpers.js"></script>
     <script type = "text/javascript" src = "..\scripts\game-canvas.js"></script>

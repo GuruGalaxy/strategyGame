@@ -33,5 +33,11 @@ module.exports = {
         }
         
         return false;
+    },
+
+    getAllUsersAsync : async function(){
+        let users = await UserModel.findAll();
+
+        return users;
     }
 }

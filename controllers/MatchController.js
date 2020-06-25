@@ -4,7 +4,7 @@ SessionData = require('../models/classes/SessionData');
 // Service instances
 const MatchService = require('../services/MatchService');
 
-// Display list of all rooms
+//
 exports.indexParams = async function(req, res) {
     let sessionData = SessionData.fromObject(req.session.userData);
 

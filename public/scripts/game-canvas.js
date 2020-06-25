@@ -1,9 +1,13 @@
 var fieldSize = 15;
 var canvasSize = 600;
 
-function drawField(context, x, y, field){
+function drawField(context, users, field){
+    context.globalAlpha = 1;
     context.strokeStyle = 'orange';
     context.fillStyle = 'orange';
+
+    let x = (field.x - 1) * fieldSize;
+    let y = (field.y - 1) * fieldSize;
 
     switch(field.type){
         case tileTypes.TYPES.MOUNTAIN : {
@@ -31,13 +35,30 @@ function drawField(context, x, y, field){
         }
     }
 
+    // color field if its owned by a user
+    if(field.ownerId)
+    {
+        let owner = users.find((user) => user.id == field.ownerId);
+
+        context.fillStyle = owner.color;
+        context.globalAlpha = 0.8;
+        context.fillRect(x, y, fieldSize, fieldSize);
+    }
+
+    // render army count number on field if it has army
     if(field.army)
     {
-        // TODO draw army count
+        context.fillStyle = 'white';
+        context.font = (fieldSize / 3) + 'px PressStart2P';
+        if(field.army < 10) context.fillText(field.army, (field.x - 1) * fieldSize + (fieldSize / 4), (field.y - 1) * fieldSize + (fieldSize/1.5));
+        else if(field.army < 100) context.fillText(field.army, (field.x - 1) * fieldSize + (fieldSize / 5), (field.y - 1) * fieldSize + (fieldSize/1.5));
+        else context.fillText(field.army, (field.x - 1) * fieldSize + (fieldSize / 12), (field.y - 1) * fieldSize + (fieldSize/1.5));
+        
     }
 }
 
 function drawActiveField(context, field){
+    context.globalAlpha = 1;
     context.strokeStyle = 'white';
     context.setLineDash([0,0]);
     context.lineWidth = 3;
@@ -46,7 +67,17 @@ function drawActiveField(context, field){
     context.stroke();
 }
 
-function prepareCanvas(canvas, context, config){console.log("prepareCanvas");
+function drawTargetField(context, field){
+    context.globalAlpha = 1;
+    context.strokeStyle = 'red';
+    context.setLineDash([0,0]);
+    context.lineWidth = 1;
+
+    context.rect((field.x - 1) * fieldSize, (field.y - 1) * fieldSize, fieldSize, fieldSize);
+    context.stroke();
+}
+
+function prepareCanvas(canvas, config){console.log("prepareCanvas");
     fieldSize = canvasSize / config.mapSize;
 
     canvas.width = canvasSize;
@@ -56,7 +87,9 @@ function prepareCanvas(canvas, context, config){console.log("prepareCanvas");
 }
 
 function prepareMap(context, config){console.log("prepareMap");
+    context.globalAlpha = 1;
     context.strokeStyle = 'white';
+    context.lineWidth = 1;
 
 	for(let i = 0; i <= config.mapSize; i++){
         context.beginPath();
@@ -75,13 +108,13 @@ function prepareMap(context, config){console.log("prepareMap");
     }
 }
 
-function renderFields(context, config, game){
-    console.log("context, game", context, game);
+function renderFields(context, config, users, map){
+    console.log("renderFields", config, users, map)
     for(let col = 1; col <= config.mapSize; col++)
     {
         for(let row = 1; row <= config.mapSize; row++)
         {
-            drawField(context, (col - 1) * fieldSize, (row - 1) * fieldSize, game.map.fields[col][row]);
+            drawField(context, users, map.fields[col][row]);
         }
     }
 }

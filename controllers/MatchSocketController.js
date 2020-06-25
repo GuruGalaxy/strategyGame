@@ -1,6 +1,8 @@
 const SessionData = require('../models/classes/SessionData');
 const UserService = require('../services/UserService');
+const MatchService = require('../services/MatchService');
 
+const MoveIntention = require('../shared/socket/move-intention');
 const MESSAGES = require('../shared/socket/Messages');
 const EVENTS = require('../shared/socket/Events');
 
@@ -18,15 +20,25 @@ module.exports = function(io, sharedsession, session){
 
     const SocketMatchService = require('../services/SocketMatchService')(matchesNamespace);
 
-    io.emit('Only for authorized');
+    MatchService.eventEmitter.addListener("gameEnded", (matchId) => {
+        console.log("gameEnded", matchId);
+        SocketMatchService.endMatch(matchId, matchesNamespace);
+    });
+
+    MatchService.eventEmitter.addListener("gameExecuted", (matchId) => {
+        console.log("gameExecuted", matchId);
+        SocketMatchService.sendMapToUsers(matchId, matchesNamespace);
+    });
 
     matchesNamespace.on('connection', function(socket){
 
-        // When connected, check if session has a room
+        // When connected, check if session has a match
         let sessionData = SessionData.fromObject(socket.handshake.session.userData);
         if(sessionData.currentMatchId != null)
         {
-            SocketMatchService.joinMatch(socket)
+            let match = MatchService.getMatchById(sessionData.currentMatchId);
+            if(match) SocketMatchService.joinMatch(socket)
+            else socket.handshake.session.currentMatchId = null;
         }
 
         // Route for rejoining a match
@@ -43,11 +55,13 @@ module.exports = function(io, sharedsession, session){
 
         })
 
-        // Route for messaging a room
-        socket.on(EVENTS.MATCHES.REQUESTS.MAKE_MOVE, function(move){
-            
-            let result = SocketMatchService.addMove(socket, move)
-
+        // Route for making a move intention
+        socket.on(EVENTS.MATCHES.REQUESTS.MAKE_MOVE, function(incomingMove){
+            if(incomingMove)
+            {
+                let moveIntention = MoveIntention.fromObject(incomingMove);
+                let result = SocketMatchService.addMove(socket, moveIntention)
+            }
         });
 
         // Route for switching ready state

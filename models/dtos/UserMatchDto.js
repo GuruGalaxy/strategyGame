@@ -1,14 +1,18 @@
 module.exports = class UserMatchDto {
-	constructor(id, login, connected = false) {
+	constructor(id, login, color, connected = false, lost = false) {
 		this.id = id;
-        this.login = login;
-        this.connected = connected;
+		this.login = login;
+		this.color = color;
+		this.connected = connected;
+		this.lost = lost;
 	}
 
 	static fromObject(object) {
 		let id = null;
-        let login = null;
-        let connected = false;
+		let login = null;
+		let color = null;
+		let connected = false;
+		let lost = false;
 
 		if(object.hasOwnProperty('id'))
 		{
@@ -18,14 +22,24 @@ module.exports = class UserMatchDto {
 		if(object.hasOwnProperty('login'))
 		{
 			login = object.login;
-        }
+		}
+		
+		if(object.hasOwnProperty('color'))
+		{
+			color = object.color;
+		}
         
         if(object.hasOwnProperty('connected'))
 		{
 			connected = object.connected;
 		}
 
-		return new this(id, login, connected);
+		if(object.hasOwnProperty('lost'))
+		{
+			lost = object.lost;
+		}
+
+		return new this(id, login, color, connected, lost);
 	}
 }
 
